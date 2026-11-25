@@ -97,6 +97,72 @@
       header h1 + p { display: none; }
       header .glass-card:has(> #liveSnackBar) { display: none; }
     }
+
+    /* ===== 🛒 간식가게 놀이 (영어 주문 · 거스름돈) ===== */
+    #shop { position: fixed; inset: 0; z-index: 70; background: #fff7e8; color: #451a03; overflow-y: auto; display: none;
+      font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+    #shop.on { display: block; }
+    #shop * { box-sizing: border-box; }
+    .sp-wrap { max-width: 640px; margin: 0 auto; }
+    .sp-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .sp-top h2 { flex: 1; font-size: clamp(17px, 4.8vw, 21px); font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-chip { background: #fff; border: 2px solid #fcd34d; border-radius: 99px; padding: 4px 10px; font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .sp-btn { border: none; border-radius: 14px; padding: 11px 14px; font-size: 15px; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; box-shadow: 0 3px 0 #b45309; }
+    .sp-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b45309; }
+    .sp-btn.ghost { background: #fff; color: #78350f; border: 2px solid #fcd34d; box-shadow: none; }
+    .sp-btn[disabled] { opacity: .45; }
+    .sp-card { background: #fff; border: 2px solid #fde68a; border-radius: 18px; padding: 12px; margin-bottom: 10px; }
+    .sp-cust { display: flex; gap: 10px; align-items: flex-start; }
+    .sp-face { font-size: 44px; line-height: 1; flex: none; }
+    .sp-bub { flex: 1; min-width: 0; background: #fef3c7; border-radius: 16px; padding: 10px 12px; position: relative; }
+    .sp-en { font-size: clamp(16px, 4.6vw, 19px); font-weight: 900; line-height: 1.35; color: #1e3a8a; word-break: keep-all; }
+    .sp-ko { font-size: 14px; color: #92400e; margin-top: 4px; font-weight: 700; word-break: keep-all; }
+    .sp-ko.hide { filter: blur(6px); cursor: pointer; user-select: none; }
+    .sp-say { border: none; background: #1e3a8a; color: #fff; border-radius: 99px; padding: 4px 10px; font-size: 12.5px; font-weight: 900; margin-top: 6px; cursor: pointer; }
+    .sp-sub { font-size: 12.5px; color: #92400e; font-weight: 800; margin: 2px 0 6px; }
+    .sp-tabs { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 6px; scrollbar-width: none; }
+    .sp-tabs::-webkit-scrollbar { display: none; }
+    .sp-tabs button { flex: none; border: 2px solid #fde68a; background: #fff; color: #92400e; border-radius: 99px; padding: 6px 11px; font-size: 13px; font-weight: 900; cursor: pointer; }
+    .sp-tabs button.on { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+    .sp-shelf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .sp-item { position: relative; background: #fffbeb; border: 2px solid #fde68a; border-radius: 14px; padding: 4px 2px 6px; text-align: center; cursor: pointer; }
+    .sp-item:active { transform: scale(.95); }
+    .sp-item canvas { width: 54px; height: 54px; display: block; margin: 0 auto; }
+    .sp-item .n { font-size: 11px; font-weight: 900; line-height: 1.2; word-break: keep-all; }
+    .sp-item .e { font-size: 10px; color: #1e3a8a; font-weight: 800; }
+    .sp-item .p { font-size: 11px; color: #b45309; font-weight: 900; }
+    .sp-item.bad { animation: spShake .35s; border-color: #ef4444; }
+    .sp-item.good { border-color: #22c55e; }
+    @keyframes spShake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    .sp-plate { min-height: 64px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; background: radial-gradient(circle, #fff 55%, #fde68a 56%, #fff 60%); border-radius: 18px; padding: 8px; }
+    .sp-plate canvas { width: 40px; height: 40px; }
+    .sp-plate .empty { color: #b45309; font-size: 13px; font-weight: 700; }
+    .sp-bill { width: 100%; font-size: 14px; border-collapse: collapse; }
+    .sp-bill td { padding: 4px 2px; border-bottom: 1px dashed #fde68a; }
+    .sp-bill td:last-child { text-align: right; font-weight: 900; }
+    .sp-bill tr.tot td { border-bottom: none; font-size: 16px; color: #b45309; }
+    .sp-paid { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 8px 0; font-weight: 900; font-size: 15px; flex-wrap: wrap; }
+    .sp-money { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .sp-m { border: none; cursor: pointer; font-weight: 900; color: #fff; border-radius: 10px; padding: 9px 2px; font-size: 13px; }
+    .sp-m.b10000 { background: #16a34a; } .sp-m.b5000 { background: #ea580c; } .sp-m.b1000 { background: #2563eb; }
+    .sp-m.c500 { background: #a8a29e; border-radius: 99px; } .sp-m.c100 { background: #d6d3d1; color: #44403c; border-radius: 99px; }
+    .sp-tray { min-height: 44px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; background: #fffbeb; border: 2px dashed #fcd34d; border-radius: 12px; padding: 6px; margin: 8px 0; }
+    .sp-tray .sp-m { padding: 5px 8px; font-size: 12px; }
+    .sp-tray .hint { color: #b45309; font-size: 12.5px; font-weight: 700; }
+    .sp-row { display: flex; gap: 8px; }
+    .sp-row > * { flex: 1; }
+    .sp-msg { text-align: center; min-height: 22px; font-weight: 900; font-size: 15px; margin: 6px 0; }
+    .sp-msg.ok { color: #16a34a; } .sp-msg.no { color: #dc2626; }
+    .sp-seg { display: flex; background: #fde68a; border-radius: 99px; padding: 3px; margin: 8px 0; }
+    .sp-seg button { flex: 1; border: none; background: transparent; padding: 8px; border-radius: 99px; font-weight: 900; font-size: 13.5px; color: #92400e; cursor: pointer; }
+    .sp-seg button.on { background: #fff; color: #451a03; }
+    .sp-price { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 13px; text-align: left; margin: 8px 0; }
+    .sp-price span b { color: #b45309; }
+    .sp-pop { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); font-size: 26px; font-weight: 1000; pointer-events: none; z-index: 80; animation: spPop .9s forwards; text-shadow: 0 2px 0 #fff; }
+    @keyframes spPop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 25% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -90%) scale(1); } }
+    @media (max-width: 360px) { .sp-item canvas { width: 44px; height: 44px; } .sp-m { font-size: 12px; } .sp-face { font-size: 36px; } }
+    @media (min-width: 700px) { .sp-shelf { grid-template-columns: repeat(6, 1fr); } }
   </style>
 </head>
 <body id="mainBody" class="w-screen h-screen flex flex-col items-center justify-between py-2 px-2.5 sm:py-3 transition-colors duration-300">
@@ -230,6 +296,10 @@
             </div>
           </div>
 
+          <button type="button" id="openShopBtn"
+            class="w-full py-3 mb-2.5 rounded-2xl text-white text-lg font-bold cursor-pointer" style="background:linear-gradient(135deg,#2563eb,#7c3aed);box-shadow:0 4px 0 #1e3a8a">
+            🛒 간식가게 놀이 <span class="text-xs font-sans">(영어 주문 · 거스름돈)</span>
+          </button>
           <button id="startGameBtn"
             class="action-btn-3d w-full py-3.5 rounded-2xl text-amber-950 text-xl tracking-wide cursor-pointer">
             🎵 먹방 리듬 시작하기!
@@ -324,6 +394,62 @@
       </span>
     </button>
   </footer>
+
+  <!-- ===== 🛒 간식가게 놀이 ===== -->
+  <div id="shop">
+    <div class="sp-wrap">
+      <div class="sp-top">
+        <button class="sp-btn ghost" id="spBack" style="padding:6px 10px;font-size:13px">← 나가기</button>
+        <h2>🛒 JJ 간식가게</h2>
+        <span class="sp-chip">⭐ <b id="spScore">0</b></span>
+        <span class="sp-chip">👤 <b id="spNo">1</b>/8</span>
+      </div>
+
+      <div id="spIntro" class="sp-card" style="text-align:center">
+        <div style="font-size:40px">🛒🧑‍🍳</div>
+        <h3 style="font-size:19px;font-weight:900;margin:4px 0">외국인 손님이 영어로 주문해요!</h3>
+        <p style="font-size:13.5px;color:#92400e;line-height:1.55">① 주문을 듣고 <b>접시에 알맞게 담기</b> (맞으면 +10, 틀리면 −5)<br>② 손님이 낸 돈에서 <b>거스름돈 내주기</b> (맞으면 +20)</p>
+        <details style="text-align:left;margin:6px 0"><summary style="font-weight:900;color:#78350f;cursor:pointer">📋 오늘의 가격표 보기 (22가지)</summary><div class="sp-price" id="spPriceList"></div></details>
+        <div class="sp-seg" id="spLv"><button data-lv="easy" class="on">🌱 쉬움 (한국어 보임)</button><button data-lv="normal">🔥 보통 (한국어 숨김)</button></div>
+        <button class="sp-btn" id="spStart" style="width:100%">가게 문 열기!</button>
+      </div>
+
+      <div id="spGame" style="display:none">
+        <div class="sp-card">
+          <div class="sp-cust">
+            <div class="sp-face" id="spFace">🧑</div>
+            <div class="sp-bub">
+              <div class="sp-en" id="spEn"></div>
+              <div class="sp-ko" id="spKo"></div>
+              <button class="sp-say" id="spSay">🔊 다시 듣기</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="spPick">
+          <div class="sp-sub">🍽 접시에 담아요 — 간식을 눌러요</div>
+          <div class="sp-plate" id="spPlate"></div>
+          <div class="sp-msg" id="spMsg1"></div>
+          <div class="sp-tabs" id="spTabs"></div>
+          <div class="sp-shelf" id="spShelf"></div>
+        </div>
+
+        <div id="spPay" style="display:none">
+          <div class="sp-card">
+            <table class="sp-bill" id="spBill"></table>
+            <div class="sp-paid">손님이 낸 돈 👉 <span class="sp-m" id="spPaidNote" style="padding:8px 14px;font-size:16px"></span></div>
+          </div>
+          <div class="sp-sub">💰 거스름돈을 골라서 건네줘요 (돈을 누르면 빼요)</div>
+          <div class="sp-tray" id="spTray"></div>
+          <div class="sp-money" id="spMoney"></div>
+          <div class="sp-msg" id="spMsg2"></div>
+          <div class="sp-row"><button class="sp-btn ghost" id="spClear">다시 고르기</button><button class="sp-btn" id="spGive">건네주기 →</button></div>
+        </div>
+      </div>
+
+      <div id="spEnd" class="sp-card" style="display:none;text-align:center"></div>
+    </div>
+  </div>
 
   <script>
     /**
@@ -2136,6 +2262,7 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.repeat) return;
+      if (document.getElementById('shop').classList.contains('on')) return;   // 간식가게 놀이 중엔 리듬게임 키 무시
       if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyJ' || e.code === 'KeyK' || e.code === 'ArrowDown') {
         if (!isPlaying && !document.getElementById('startOverlay').classList.contains('hidden')) {
           startNewGame();
@@ -2159,6 +2286,269 @@
       resetStats();
       requestAnimationFrame(gameLoop);
     };
+
+    // ===================== 🛒 JJ 간식가게 (영어 주문 · 거스름돈) =====================
+    (function () {
+      // cat: store 편의점 · snack 분식 · dessert 디저트 · drink 음료
+      const ITEMS = [
+        { id: 'kimbap', cat: 'store', ko: '참치마요 삼각김밥', en: 'triangle kimbap', ens: 'triangle kimbaps', price: 1500 },
+        { id: 'cupnoodle', cat: 'store', emoji: '🍜', ko: '컵라면', en: 'cup noodles', ens: 'cup noodles', price: 1300 },
+        { id: 'jelly', cat: 'store', emoji: '🍬', ko: '젤리', en: 'pack of gummy jelly', ens: 'packs of gummy jelly', price: 1000 },
+        { id: 'dubai', cat: 'store', emoji: '🍪', ko: '두바이 쫀득쿠키', en: 'Dubai chewy cookie', ens: 'Dubai chewy cookies', price: 3500 },
+        { id: 'tteokbokki', cat: 'snack', emoji: '🥘', ko: '떡볶이', en: 'tteokbokki', ens: 'tteokbokki', price: 3000 },
+        { id: 'sotteok', cat: 'snack', emoji: '🍢', ko: '소떡소떡', en: 'sotteok skewer', ens: 'sotteok skewers', price: 2500 },
+        { id: 'hotdog', cat: 'snack', emoji: '🌭', ko: '핫도그', en: 'hot dog', ens: 'hot dogs', price: 2500 },
+        { id: 'fries', cat: 'snack', emoji: '🍟', ko: '감자튀김', en: 'bag of fries', ens: 'bags of fries', price: 2000 },
+        { id: 'nuggets', cat: 'snack', emoji: '🍗', ko: '치킨너겟', en: 'box of chicken nuggets', ens: 'boxes of chicken nuggets', price: 3000 },
+        { id: 'pizza', cat: 'snack', emoji: '🍕', ko: '피자 한 조각', en: 'slice of pizza', ens: 'slices of pizza', price: 3500 },
+        { id: 'tanghulu', cat: 'dessert', emoji: '🍡', ko: '탕후루', en: 'tanghulu', ens: 'tanghulu', price: 3000 },
+        { id: 'icecream', cat: 'dessert', emoji: '🍦', ko: '아이스크림', en: 'ice cream', ens: 'ice creams', price: 1200 },
+        { id: 'bungeoppang', cat: 'dessert', emoji: '🐟', ko: '붕어빵', en: 'fish bread', ens: 'fish breads', price: 1000 },
+        { id: 'mochi_strawberry', cat: 'dessert', ko: '딸기 모찌', en: 'strawberry mochi', ens: 'strawberry mochi', price: 1800 },
+        { id: 'mochi_choco', cat: 'dessert', ko: '초코 모찌', en: 'chocolate mochi', ens: 'chocolate mochi', price: 1900 },
+        { id: 'mochi_muscat', cat: 'dessert', ko: '샤인머스켓 모찌', en: 'grape mochi', ens: 'grape mochi', price: 2000 },
+        { id: 'mochi_kiwi', cat: 'dessert', ko: '키위 모찌', en: 'kiwi mochi', ens: 'kiwi mochi', price: 1600 },
+        { id: 'mochi_black', cat: 'dessert', ko: '흑임자 찹쌀떡', en: 'black sesame mochi', ens: 'black sesame mochi', price: 1200 },
+        { id: 'milk', cat: 'drink', ko: '바나나맛우유', en: 'banana milk', ens: 'banana milks', price: 1700 },
+        { id: 'chocomilk', cat: 'drink', emoji: '🍫', ko: '초코우유', en: 'chocolate milk', ens: 'chocolate milks', price: 1500 },
+        { id: 'slushie', cat: 'drink', emoji: '🧊', ko: '슬러시', en: 'slushie', ens: 'slushies', price: 1800 },
+        { id: 'bubbletea', cat: 'drink', emoji: '🧋', ko: '버블티', en: 'bubble tea', ens: 'bubble teas', price: 3500 }
+      ];
+      const CATS = [['all', '전체'], ['store', '🏪 편의점'], ['snack', '🍢 분식'], ['dessert', '🍡 디저트'], ['drink', '🥤 음료']];
+      let shelfCat = 'all';
+      const emojiOf = id => (BY_ID(id).emoji) || (SNACK_CATALOG[id] && SNACK_CATALOG[id].emoji) || '🍽';
+      function BY_ID(id) { return ITEMS.find(i => i.id === id) || {}; }
+      const BY = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+      const NUM_EN = ['zero', 'one', 'two', 'three'];
+      const FACES = ['🧑🏼', '👩🏻‍🦰', '👨🏽', '👧🏼', '👦🏾', '👱🏻‍♀️', '🧔🏻', '👩🏽', '👴🏼', '👵🏻'];
+      const MONEY = [10000, 5000, 1000, 500, 100];
+      const CUSTOMERS = 8;
+      const $ = id => document.getElementById(id);
+      const won = n => n.toLocaleString('ko-KR') + '원';
+      const mClass = v => v >= 1000 ? 'b' + v : 'c' + v;
+      const mLabel = v => v >= 10000 ? (v / 10000) + '만원' : v >= 1000 ? (v / 1000) + '천원' : v + '원';
+      let lv = 'easy', score = 0, no = 0, order = [], plate = {}, total = 0, paid = 0, tray = [], sales = 0, okPick = 0, badPick = 0, okChange = 0, tryChange = 0, koShown = false;
+
+      function icon(id, size) {
+        const c = document.createElement('canvas');
+        const d = Math.min(window.devicePixelRatio || 1, 2);
+        c.width = size * d; c.height = size * d;
+        const x = c.getContext('2d'); x.scale(d, d);
+        const r = size * 0.36;
+        if (!SNACK_CATALOG[id]) {
+          x.font = `${Math.round(size * 0.68)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+          x.textAlign = 'center'; x.textBaseline = 'middle';
+          x.fillText(emojiOf(id), size / 2, size / 2 + size * 0.04);
+          return c;
+        }
+        try {
+          if (id === 'kimbap') drawKimbapArt(x, size / 2, size / 2 + 2, r);
+          else if (id === 'milk') drawMilkArt(x, size / 2, size / 2 + 2, r);
+          else drawMochiArt(x, SNACK_CATALOG[id], size / 2, size / 2 + 2, r);
+        } catch (e) { x.font = (size * 0.6) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(SNACK_CATALOG[id].emoji, size / 2, size / 2); }
+        return c;
+      }
+
+      function speakEn(t) {
+        try {
+          if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(t); u.lang = 'en-US'; u.rate = 0.85;
+            speechSynthesis.speak(u); return;
+          }
+        } catch (e) {}
+        try { const N = window.AtelierApp || (window.parent && window.parent.AtelierApp); if (N && N.speak) N.speak(t, 0.85); } catch (e) {}
+      }
+
+      function pop(text, color) {
+        const d = document.createElement('div'); d.className = 'sp-pop'; d.textContent = text; d.style.color = color;
+        document.body.appendChild(d); setTimeout(() => d.remove(), 950);
+      }
+      function beep(f, dur) {
+        try {
+          const ac = window.__spAc || (window.__spAc = new (window.AudioContext || window.webkitAudioContext)());
+          const o = ac.createOscillator(), g = ac.createGain();
+          o.type = 'triangle'; o.frequency.value = f;
+          g.gain.setValueAtTime(.1, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur + .05);
+          o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + dur + .07);
+        } catch (e) {}
+      }
+      function josa(w, a, b) { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c <= 11171 && c % 28 ? a : b; }
+      function setScore(d) { score = Math.max(0, score + d); $('spScore').textContent = score; }
+
+      function open() {
+        try { if (typeof isPlaying !== 'undefined' && isPlaying) return; } catch (e) {}
+        $('shop').classList.add('on');
+        $('spIntro').style.display = ''; $('spGame').style.display = 'none'; $('spEnd').style.display = 'none';
+        $('spPriceList').innerHTML = 
+          ITEMS.map(i => `<span>${emojiOf(i.id)} ${i.ko} <b>${won(i.price)}</b></span>`).join('');
+      }
+      const SHOP_ONLY = new URLSearchParams(location.search).get('mode') === 'shop';   // 갤러리 '똑똑해지기'에서 열면 가게 놀이만
+      function close() {
+        try { speechSynthesis.cancel(); } catch (e) {}
+        if (SHOP_ONLY) { open(); return; }   // 가게 놀이 전용: 처음 화면으로
+        $('shop').classList.remove('on');
+      }
+
+      function start() {
+        score = 0; no = 0; sales = 0; okPick = badPick = okChange = tryChange = 0;
+        $('spScore').textContent = 0;
+        $('spIntro').style.display = 'none'; $('spEnd').style.display = 'none'; $('spGame').style.display = '';
+        shelfCat = 'all'; buildTabs(); buildShelf();
+        nextCustomer();
+      }
+
+      function buildTabs() {
+        const t = $('spTabs');
+        t.innerHTML = CATS.map(([k, n]) => `<button class="${k === shelfCat ? 'on' : ''}" data-c="${k}">${n}</button>`).join('');
+        t.querySelectorAll('button').forEach(b => b.onclick = () => { shelfCat = b.dataset.c; buildTabs(); buildShelf(); });
+      }
+      function buildShelf() {
+        const sh = $('spShelf'); sh.innerHTML = '';
+        ITEMS.filter(it => shelfCat === 'all' || it.cat === shelfCat).forEach(it => {
+          const b = document.createElement('div'); b.className = 'sp-item'; b.dataset.id = it.id;
+          b.appendChild(icon(it.id, 54));
+          b.insertAdjacentHTML('beforeend', `<div class="n">${it.ko}</div><div class="e">${it.en}</div><div class="p">${won(it.price)}</div>`);
+          b.onclick = () => pick(it.id, b);
+          sh.appendChild(b);
+        });
+      }
+
+      function makeOrder() {
+        const kinds = lv === 'easy' ? (Math.random() < 0.55 ? 1 : 2) : 1 + Math.floor(Math.random() * 3);
+        const maxQ = lv === 'easy' ? 2 : 3;
+        const pool = ITEMS.slice().sort(() => Math.random() - .5).slice(0, kinds);
+        return pool.map(it => ({ id: it.id, q: 1 + Math.floor(Math.random() * maxQ) }));
+      }
+      function sentence(o) {
+        const parts = o.map(x => `${NUM_EN[x.q]} ${x.q > 1 ? BY[x.id].ens : BY[x.id].en}`);
+        const list = parts.length === 1 ? parts[0] : parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+        const opener = ['Hello!', 'Hi there!', 'Excuse me!', 'Good afternoon!'][Math.floor(Math.random() * 4)];
+        const ask = ['Can I have', 'I would like', 'Could I get'][Math.floor(Math.random() * 3)];
+        return `${opener} ${ask} ${list}, please${ask === 'I would like' ? '.' : '?'}`;
+      }
+      function koSentence(o) {
+        return o.map(x => `${BY[x.id].ko} ${x.q}개`).join(', ') + ' 주세요!';
+      }
+
+      function nextCustomer() {
+        no++;
+        if (no > CUSTOMERS) return finish();
+        $('spNo').textContent = no;
+        order = makeOrder(); plate = {}; tray = [];
+        total = order.reduce((s, x) => s + BY[x.id].price * x.q, 0);
+        // 손님이 내는 돈: 합계보다 큰 지폐 (가끔 더 큰 지폐)
+        const bills = [5000, 10000, 50000].filter(b => b > total);
+        paid = bills[Math.random() < 0.7 ? 0 : Math.min(1, bills.length - 1)];
+        $('spFace').textContent = FACES[Math.floor(Math.random() * FACES.length)];
+        const en = sentence(order);
+        $('spEn').textContent = '“' + en + '”';
+        $('spKo').textContent = koSentence(order);
+        koShown = lv === 'easy';
+        $('spKo').classList.toggle('hide', !koShown);
+        $('spKo').title = koShown ? '' : '눌러서 한국어 보기';
+        $('spPick').style.display = ''; $('spPay').style.display = 'none';
+        $('spMsg1').textContent = ''; $('spMsg1').className = 'sp-msg';
+        $('spSay').onclick = () => speakEn(en);
+        renderPlate();
+        setTimeout(() => speakEn(en), 250);
+      }
+
+      function need(id) { const o = order.find(x => x.id === id); return o ? o.q : 0; }
+      function pick(id, el) {
+        if ($('spPick').style.display === 'none') return;
+        const have = plate[id] || 0;
+        if (have < need(id)) {
+          plate[id] = have + 1; okPick++;
+          setScore(10); beep(660, .07);
+          el.classList.remove('bad'); el.classList.add('good'); setTimeout(() => el.classList.remove('good'), 250);
+          $('spMsg1').textContent = `⭕ ${BY[id].ko} 맞아요! +10`; $('spMsg1').className = 'sp-msg ok';
+          renderPlate();
+          if (order.every(x => (plate[x.id] || 0) === x.q)) setTimeout(toPay, 600);
+        } else {
+          badPick++; setScore(-5); beep(200, .15);
+          el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad');
+          $('spMsg1').textContent = need(id) ? `❌ ${BY[id].ko}${josa(BY[id].ko, '은', '는')} 이미 다 담았어요 −5` : `❌ 손님은 ${BY[id].ko}${josa(BY[id].ko, '을', '를')} 안 시켰어요 (${BY[id].en}) −5`;
+          $('spMsg1').className = 'sp-msg no';
+        }
+      }
+      function renderPlate() {
+        const p = $('spPlate'); p.innerHTML = '';
+        const ids = Object.keys(plate);
+        if (!ids.length) { p.innerHTML = '<span class="empty">접시가 비어 있어요</span>'; return; }
+        ids.forEach(id => { for (let i = 0; i < plate[id]; i++) p.appendChild(icon(id, 40)); });
+      }
+
+      function toPay() {
+        $('spPick').style.display = 'none'; $('spPay').style.display = '';
+        $('spBill').innerHTML = order.map(x => `<tr><td>${emojiOf(x.id)} ${BY[x.id].ko} × ${x.q}</td><td>${won(BY[x.id].price)} × ${x.q} = ${won(BY[x.id].price * x.q)}</td></tr>`).join('') +
+          `<tr class="tot"><td>합계</td><td>${won(total)}</td></tr>`;
+        const n = $('spPaidNote'); n.className = 'sp-m ' + (paid === 50000 ? 'b5000' : mClass(paid)); n.textContent = won(paid);
+        if (paid === 50000) n.style.background = '#ca8a04'; else n.style.background = '';
+        $('spMoney').innerHTML = MONEY.map(v => `<button class="sp-m ${mClass(v)}" data-v="${v}">${mLabel(v)}</button>`).join('');
+        $('spMoney').querySelectorAll('button').forEach(b => b.onclick = () => { tray.push(+b.dataset.v); tray.sort((a, b) => b - a); renderTray(); beep(520, .04); });
+        $('spMsg2').textContent = `거스름돈 = ${won(paid)} − ${won(total)} = ?`; $('spMsg2').className = 'sp-msg';
+        tray = []; renderTray();
+        speakEn('Here you are.');
+      }
+      function renderTray() {
+        const t = $('spTray');
+        if (!tray.length) { t.innerHTML = '<span class="hint">아래 돈을 눌러 거스름돈을 모아요</span>'; return; }
+        const sum = tray.reduce((s, v) => s + v, 0);
+        t.innerHTML = tray.map((v, i) => `<button class="sp-m ${mClass(v)}" data-i="${i}">${mLabel(v)}</button>`).join('') +
+          `<span class="hint" style="margin-left:auto">모은 돈 ${won(sum)}</span>`;
+        t.querySelectorAll('button').forEach(b => b.onclick = () => { tray.splice(+b.dataset.i, 1); renderTray(); });
+      }
+      function give() {
+        const sum = tray.reduce((s, v) => s + v, 0);
+        const change = paid - total;
+        tryChange++;
+        if (sum === change) {
+          okChange++; sales += total;
+          setScore(20); pop('+20 💰', '#16a34a');
+          [660, 880, 1100].forEach((f, i) => setTimeout(() => beep(f, .1), i * 90));
+          $('spMsg2').textContent = `⭕ 정답! 거스름돈 ${won(change)} · "Thank you!"`; $('spMsg2').className = 'sp-msg ok';
+          speakEn('Thank you! Have a nice day!');
+          $('spGive').disabled = true;
+          setTimeout(() => { $('spGive').disabled = false; nextCustomer(); }, 1700);
+        } else {
+          setScore(-10); pop('−10', '#dc2626'); beep(180, .2);
+          const diff = change - sum;
+          $('spMsg2').textContent = diff > 0 ? `❌ ${won(diff)} 더 줘야 해요 −10` : `❌ ${won(-diff)} 너무 많이 줬어요 −10`;
+          $('spMsg2').className = 'sp-msg no';
+        }
+      }
+
+      function finish() {
+        $('spGame').style.display = 'none';
+        const end = $('spEnd'); end.style.display = '';
+        const rank = score >= 300 ? '🏆 간식가게 사장님' : score >= 200 ? '🥇 믿음직한 점장' : score >= 100 ? '🙂 성실한 알바생' : '🌱 새내기 직원';
+        end.innerHTML = `<div style="font-size:44px">🏪</div>
+          <h3 style="font-size:21px;font-weight:900;margin:4px 0">오늘 장사 끝! ${rank}</h3>
+          <table class="sp-bill" style="margin:10px 0">
+            <tr><td>⭐ 점수</td><td>${score}점</td></tr>
+            <tr><td>🛍 오늘 매출</td><td>${won(sales)}</td></tr>
+            <tr><td>🍽 바르게 담기</td><td>${okPick}번 (실수 ${badPick}번)</td></tr>
+            <tr class="tot"><td>💰 거스름돈 정답</td><td>${okChange} / ${tryChange}번</td></tr>
+          </table>
+          <div class="sp-row"><button class="sp-btn" id="spAgain">한 번 더 장사하기</button><button class="sp-btn ghost" id="spOut">나가기</button></div>`;
+        $('spAgain').onclick = start; $('spOut').onclick = close;
+        if (score >= 200) { try { localStorage.setItem('agjj_pending_paint', String((parseInt(localStorage.getItem('agjj_pending_paint') || '0', 10) || 0) + 1)); } catch (e) {} }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {});
+      $('spBack').onclick = close;
+      $('spStart').onclick = start;
+      $('spClear').onclick = () => { tray = []; renderTray(); };
+      $('spGive').onclick = give;
+      $('spKo').onclick = () => { if (!koShown) { koShown = true; $('spKo').classList.remove('hide'); } };
+      $('spLv').querySelectorAll('button').forEach(b => b.onclick = () => {
+        lv = b.dataset.lv; $('spLv').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      });
+      const openBtn = $('openShopBtn'); if (openBtn) openBtn.onclick = open;
+      window.openSnackShop = open;
+      if (SHOP_ONLY) { open(); $('spBack').textContent = '↺ 처음으로'; }
+    })();
   </script>
 </body>
 </html>
