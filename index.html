@@ -161,6 +161,7 @@
     .sp-price span b { color: #b45309; }
     .sp-pop { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); font-size: 26px; font-weight: 1000; pointer-events: none; z-index: 80; animation: spPop .9s forwards; text-shadow: 0 2px 0 #fff; }
     @keyframes spPop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 25% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -90%) scale(1); } }
+    @media (max-width: 430px) { .sp-top { gap: 5px; } .sp-chip { padding: 3px 7px; font-size: 12px; } .sp-top h2 { font-size: 15px; } #spBack { padding: 5px 8px !important; font-size: 12px !important; } }
     @media (max-width: 360px) { .sp-item canvas { width: 44px; height: 44px; } .sp-m { font-size: 12px; } .sp-face { font-size: 36px; } }
     @media (min-width: 700px) { .sp-shelf { grid-template-columns: repeat(6, 1fr); } }
   </style>
@@ -402,7 +403,8 @@
         <button class="sp-btn ghost" id="spBack" style="padding:6px 10px;font-size:13px">← 나가기</button>
         <h2>🛒 JJ 간식가게</h2>
         <span class="sp-chip">⭐ <b id="spScore">0</b></span>
-        <span class="sp-chip">👤 <b id="spNo">1</b>/8</span>
+        <span class="sp-chip" id="spLvChip">Lv <b id="spLvNo">1</b></span>
+        <span class="sp-chip">👤 <b id="spNo">1</b>/10</span>
       </div>
 
       <div id="spIntro" class="sp-card" style="text-align:center">
@@ -410,7 +412,11 @@
         <h3 style="font-size:19px;font-weight:900;margin:4px 0">외국인 손님이 영어로 주문해요!</h3>
         <p style="font-size:13.5px;color:#92400e;line-height:1.55">① 주문을 듣고 <b>접시에 알맞게 담기</b> (맞으면 +10, 틀리면 −5)<br>② 손님이 낸 돈에서 <b>거스름돈 내주기</b> (맞으면 +20)</p>
         <details style="text-align:left;margin:6px 0"><summary style="font-weight:900;color:#78350f;cursor:pointer">📋 오늘의 가격표 보기 (22가지)</summary><div class="sp-price" id="spPriceList"></div></details>
-        <div class="sp-seg" id="spLv"><button data-lv="easy" class="on">🌱 쉬움 (한국어 보임)</button><button data-lv="normal">🔥 보통 (한국어 숨김)</button></div>
+        <div style="background:#fef3c7;border-radius:14px;padding:8px 10px;font-size:12.5px;color:#78350f;text-align:left;line-height:1.55;margin:8px 0">
+          ⬆ <b>실수 없이 손님 2명을 연속으로</b> 받으면 레벨 업! (최고 Lv 5)<br>
+          Lv1 메뉴 1가지 · Lv2 2가지 · Lv3 <b>한국어 숨김</b> · Lv4 큰 돈 · Lv5 <b>합계도 직접 계산</b><br>
+          연속 2번 많이 틀리면 한 단계 쉬워져요.
+        </div>
         <button class="sp-btn" id="spStart" style="width:100%">가게 문 열기!</button>
       </div>
 
@@ -2322,12 +2328,12 @@
       const NUM_EN = ['zero', 'one', 'two', 'three'];
       const FACES = ['🧑🏼', '👩🏻‍🦰', '👨🏽', '👧🏼', '👦🏾', '👱🏻‍♀️', '🧔🏻', '👩🏽', '👴🏼', '👵🏻'];
       const MONEY = [10000, 5000, 1000, 500, 100];
-      const CUSTOMERS = 8;
+      const CUSTOMERS = 10;
       const $ = id => document.getElementById(id);
       const won = n => n.toLocaleString('ko-KR') + '원';
       const mClass = v => v >= 1000 ? 'b' + v : 'c' + v;
       const mLabel = v => v >= 10000 ? (v / 10000) + '만원' : v >= 1000 ? (v / 1000) + '천원' : v + '원';
-      let lv = 'easy', score = 0, no = 0, order = [], plate = {}, total = 0, paid = 0, tray = [], sales = 0, okPick = 0, badPick = 0, okChange = 0, tryChange = 0, koShown = false;
+      let level = 1, maxLevel = 1, streakGood = 0, streakBad = 0, mistakes = 0, totalStep = false, score = 0, no = 0, order = [], plate = {}, total = 0, paid = 0, tray = [], sales = 0, okPick = 0, badPick = 0, okChange = 0, tryChange = 0, koShown = false;
 
       function icon(id, size) {
         const c = document.createElement('canvas');
@@ -2392,6 +2398,7 @@
 
       function start() {
         score = 0; no = 0; sales = 0; okPick = badPick = okChange = tryChange = 0;
+        level = 1; maxLevel = 1; streakGood = 0; streakBad = 0; $('spLvNo').textContent = 1;
         $('spScore').textContent = 0;
         $('spIntro').style.display = 'none'; $('spEnd').style.display = 'none'; $('spGame').style.display = '';
         shelfCat = 'all'; buildTabs(); buildShelf();
@@ -2415,8 +2422,9 @@
       }
 
       function makeOrder() {
-        const kinds = lv === 'easy' ? (Math.random() < 0.55 ? 1 : 2) : 1 + Math.floor(Math.random() * 3);
-        const maxQ = lv === 'easy' ? 2 : 3;
+        // 레벨이 오를수록 메뉴 가짓수와 개수가 늘어나요
+        const kinds = level === 1 ? 1 : level === 2 ? (Math.random() < 0.4 ? 1 : 2) : 2 + (Math.random() < 0.5 ? 1 : 0);
+        const maxQ = level <= 3 ? 2 : 3;
         const pool = ITEMS.slice().sort(() => Math.random() - .5).slice(0, kinds);
         return pool.map(it => ({ id: it.id, q: 1 + Math.floor(Math.random() * maxQ) }));
       }
@@ -2439,12 +2447,14 @@
         total = order.reduce((s, x) => s + BY[x.id].price * x.q, 0);
         // 손님이 내는 돈: 합계보다 큰 지폐 (가끔 더 큰 지폐)
         const bills = [5000, 10000, 50000].filter(b => b > total);
-        paid = bills[Math.random() < 0.7 ? 0 : Math.min(1, bills.length - 1)];
+        // Lv1~3: 가장 작은 지폐, Lv4~: 더 큰 돈을 내는 손님도 와요
+        paid = level <= 3 ? bills[0] : bills[Math.random() < 0.45 ? 0 : Math.min(bills.length - 1, 1 + (Math.random() < 0.3 ? 1 : 0))];
+        mistakes = 0;
         $('spFace').textContent = FACES[Math.floor(Math.random() * FACES.length)];
         const en = sentence(order);
         $('spEn').textContent = '“' + en + '”';
         $('spKo').textContent = koSentence(order);
-        koShown = lv === 'easy';
+        koShown = level <= 2;
         $('spKo').classList.toggle('hide', !koShown);
         $('spKo').title = koShown ? '' : '눌러서 한국어 보기';
         $('spPick').style.display = ''; $('spPay').style.display = 'none';
@@ -2466,7 +2476,7 @@
           renderPlate();
           if (order.every(x => (plate[x.id] || 0) === x.q)) setTimeout(toPay, 600);
         } else {
-          badPick++; setScore(-5); beep(200, .15);
+          badPick++; mistakes++; setScore(-5); beep(200, .15);
           el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad');
           $('spMsg1').textContent = need(id) ? `❌ ${BY[id].ko}${josa(BY[id].ko, '은', '는')} 이미 다 담았어요 −5` : `❌ 손님은 ${BY[id].ko}${josa(BY[id].ko, '을', '를')} 안 시켰어요 (${BY[id].en}) −5`;
           $('spMsg1').className = 'sp-msg no';
@@ -2481,15 +2491,57 @@
 
       function toPay() {
         $('spPick').style.display = 'none'; $('spPay').style.display = '';
-        $('spBill').innerHTML = order.map(x => `<tr><td>${emojiOf(x.id)} ${BY[x.id].ko} × ${x.q}</td><td>${won(BY[x.id].price)} × ${x.q} = ${won(BY[x.id].price * x.q)}</td></tr>`).join('') +
-          `<tr class="tot"><td>합계</td><td>${won(total)}</td></tr>`;
+        $('spMoney').style.opacity = 1; $('spMoney').style.pointerEvents = ''; $('spGive').disabled = false;
+        totalStep = level >= 5;
+        renderBill(!totalStep);
         const n = $('spPaidNote'); n.className = 'sp-m ' + (paid === 50000 ? 'b5000' : mClass(paid)); n.textContent = won(paid);
         if (paid === 50000) n.style.background = '#ca8a04'; else n.style.background = '';
         $('spMoney').innerHTML = MONEY.map(v => `<button class="sp-m ${mClass(v)}" data-v="${v}">${mLabel(v)}</button>`).join('');
         $('spMoney').querySelectorAll('button').forEach(b => b.onclick = () => { tray.push(+b.dataset.v); tray.sort((a, b) => b - a); renderTray(); beep(520, .04); });
-        $('spMsg2').textContent = `거스름돈 = ${won(paid)} − ${won(total)} = ?`; $('spMsg2').className = 'sp-msg';
         tray = []; renderTray();
+        if (totalStep) askTotal();
+        else { $('spMsg2').textContent = `거스름돈 = ${won(paid)} − ${won(total)} = ?`; $('spMsg2').className = 'sp-msg'; }
         speakEn('Here you are.');
+      }
+      function renderBill(showTotal) {
+        $('spBill').innerHTML = order.map(x => `<tr><td>${emojiOf(x.id)} ${BY[x.id].ko} × ${x.q}</td><td>${won(BY[x.id].price)} × ${x.q} = ${showTotal ? won(BY[x.id].price * x.q) : '?'}</td></tr>`).join('') +
+          `<tr class="tot"><td>합계</td><td>${showTotal ? won(total) : '❓'}</td></tr>`;
+      }
+      // Lv5: 합계를 직접 계산해서 고르기
+      function askTotal() {
+        const opts = new Set([total]);
+        const steps = [-1000, -500, -300, -200, 200, 300, 500, 1000];
+        while (opts.size < 3) { const v = total + steps[Math.floor(Math.random() * steps.length)]; if (v > 0) opts.add(v); }
+        const arr = [...opts].sort(() => Math.random() - .5);
+        $('spMsg2').innerHTML = `🧮 합계는 얼마일까요? ` + arr.map(v => `<button class="sp-btn ghost sp-tot" data-v="${v}" style="padding:6px 10px;font-size:14px;margin:2px">${won(v)}</button>`).join('');
+        $('spMsg2').className = 'sp-msg';
+        $('spGive').disabled = true; $('spMoney').style.opacity = .4; $('spMoney').style.pointerEvents = 'none';
+        $('spMsg2').querySelectorAll('.sp-tot').forEach(b => b.onclick = () => {
+          if (+b.dataset.v === total) {
+            setScore(15); pop('+15 🧮', '#16a34a'); beep(880, .1);
+            totalStep = false; renderBill(true);
+            $('spGive').disabled = false; $('spMoney').style.opacity = 1; $('spMoney').style.pointerEvents = '';
+            $('spMsg2').textContent = `⭕ 합계 ${won(total)} 정답! 이제 거스름돈 = ${won(paid)} − ${won(total)} = ?`; $('spMsg2').className = 'sp-msg ok';
+          } else {
+            mistakes++; setScore(-5); pop('−5', '#dc2626'); beep(200, .15);
+            b.disabled = true; b.style.opacity = .4;
+          }
+        });
+      }
+      function afterCustomer() {
+        if (mistakes === 0) { streakGood++; streakBad = 0; }
+        else if (mistakes >= 2) { streakBad++; streakGood = 0; }
+        else { streakGood = 0; streakBad = 0; }
+        if (streakGood >= 2 && level < 5) {
+          level++; streakGood = 0; maxLevel = Math.max(maxLevel, level);
+          setScore(level * 10);
+          setTimeout(() => { pop(`레벨 UP! Lv ${level} 🎉`, '#7c3aed'); [700, 900, 1200, 1500].forEach((f, i) => setTimeout(() => beep(f, .1), i * 90)); }, 150);
+        } else if (streakBad >= 2 && level > 1) {
+          level--; streakBad = 0;
+          setTimeout(() => pop(`천천히 해 봐요 · Lv ${level}`, '#b45309'), 150);
+        }
+        $('spLvNo').textContent = level;
+        nextCustomer();
       }
       function renderTray() {
         const t = $('spTray');
@@ -2510,9 +2562,9 @@
           $('spMsg2').textContent = `⭕ 정답! 거스름돈 ${won(change)} · "Thank you!"`; $('spMsg2').className = 'sp-msg ok';
           speakEn('Thank you! Have a nice day!');
           $('spGive').disabled = true;
-          setTimeout(() => { $('spGive').disabled = false; nextCustomer(); }, 1700);
+          setTimeout(() => { $('spGive').disabled = false; afterCustomer(); }, 1700);
         } else {
-          setScore(-10); pop('−10', '#dc2626'); beep(180, .2);
+          mistakes++; setScore(-10); pop('−10', '#dc2626'); beep(180, .2);
           const diff = change - sum;
           $('spMsg2').textContent = diff > 0 ? `❌ ${won(diff)} 더 줘야 해요 −10` : `❌ ${won(-diff)} 너무 많이 줬어요 −10`;
           $('spMsg2').className = 'sp-msg no';
@@ -2527,6 +2579,7 @@
           <h3 style="font-size:21px;font-weight:900;margin:4px 0">오늘 장사 끝! ${rank}</h3>
           <table class="sp-bill" style="margin:10px 0">
             <tr><td>⭐ 점수</td><td>${score}점</td></tr>
+            <tr><td>🚀 최고 레벨</td><td>Lv ${maxLevel}</td></tr>
             <tr><td>🛍 오늘 매출</td><td>${won(sales)}</td></tr>
             <tr><td>🍽 바르게 담기</td><td>${okPick}번 (실수 ${badPick}번)</td></tr>
             <tr class="tot"><td>💰 거스름돈 정답</td><td>${okChange} / ${tryChange}번</td></tr>
@@ -2542,9 +2595,7 @@
       $('spClear').onclick = () => { tray = []; renderTray(); };
       $('spGive').onclick = give;
       $('spKo').onclick = () => { if (!koShown) { koShown = true; $('spKo').classList.remove('hide'); } };
-      $('spLv').querySelectorAll('button').forEach(b => b.onclick = () => {
-        lv = b.dataset.lv; $('spLv').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
-      });
+
       const openBtn = $('openShopBtn'); if (openBtn) openBtn.onclick = open;
       window.openSnackShop = open;
       if (SHOP_ONLY) { open(); $('spBack').textContent = '↺ 처음으로'; }
